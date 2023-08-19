@@ -3,27 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-  [SerializeField]
-  private float _speed = 3.5f;
+  // movement global variables
+  public float speed = 10.0f;
   public float horizontalInput;
   public float verticalInput;
 
+  // laser prefab
+  [SerializeField]
+  private GameObject _laserPrefab;
+  [SerializeField]
+  private float _fireRate;
+  private float _canFire = -1.0f;
+
   void Start() {
     transform.position = new Vector3(0, 0, 0);      
+    _fireRate = 0.25f;
   }
 
   void Update() {
+    CalculateMovement();
+    if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) {
+      FireLaser();
+    }
+  }
+
+  void FireLaser() {
+    _canFire = Time.time + _fireRate;
+    Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+  }
+
+  void CalculateMovement() {
     horizontalInput = GetPositionX();
     verticalInput = GetPositionY();
 
-    Debug.Log(horizontalInput + " " + verticalInput);
-
     Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
-    transform.Translate(direction * _speed * Time.deltaTime);
+    transform.Translate(direction * speed * Time.deltaTime);
   }
 
   float GetPositionX() {
-
     horizontalInput = Input.GetAxis("Horizontal");
 
     if (transform.position.x >= 11.3f) {
