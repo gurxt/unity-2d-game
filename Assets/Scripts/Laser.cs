@@ -7,7 +7,6 @@ public class Laser : MonoBehaviour {
   private float _speed = 20.0f;
   
   void Start() {
-      
   }
 
   void Update() {
@@ -16,6 +15,5 @@ public class Laser : MonoBehaviour {
     }
     
     transform.Translate(Vector3.up * _speed * Time.deltaTime);      
-
   }
 }

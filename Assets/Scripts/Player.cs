@@ -15,6 +15,15 @@ public class Player : MonoBehaviour {
   private float _fireRate;
   private float _canFire = -1.0f;
 
+  // enemy prefab
+  [SerializeField]
+  private GameObject _enemyPrefab;
+  
+  // lives
+  [SerializeField] 
+  private int lives = 3;
+
+  /* ============= BUILT IN METHODS ============== */
   void Start() {
     transform.position = new Vector3(0, 0, 0);      
     _fireRate = 0.25f;
@@ -26,12 +35,19 @@ public class Player : MonoBehaviour {
       FireLaser();
     }
   }
+  /* ============================================= */
 
+  /* ============= STAND ALONE METHODS =========== */
   void FireLaser() {
     _canFire = Time.time + _fireRate;
     Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+    // 25% chance of spawning enemy upon firing
+    if (Random.Range(0, 4) == 0)
+      Instantiate(_enemyPrefab);
   }
+  /* ============================================= */
 
+  /* ============= MOVEMENT METHODS ============== */
   void CalculateMovement() {
     horizontalInput = GetPositionX();
     verticalInput = GetPositionY();
@@ -71,5 +87,6 @@ public class Player : MonoBehaviour {
 
     return verticalInput;
   }
+  /* ============================================= */
 
 }
