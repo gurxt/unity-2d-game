@@ -32,6 +32,19 @@ public class Player : MonoBehaviour {
   [SerializeField] 
   private bool _tripleShotActive;
 
+  // speed boost variables
+  [SerializeField]
+  private bool _speedBoostActive;
+
+  // shield boost variables
+  [SerializeField]
+  private bool _shieldBoostActive;
+
+  // shield visual component
+  [SerializeField]
+  private GameObject _shield;
+
+
   /* ============= BUILT IN METHODS ============== */
   void Start() {
     transform.position = new Vector3(0, 0, 0);      
@@ -60,7 +73,13 @@ public class Player : MonoBehaviour {
   }
 
   public void Damage() {
-    _lives--;
+    if (!_shieldBoostActive) {
+      _lives--;
+      Debug.Log("Lives Remaining: " + _lives);
+    } else {
+      _shield.SetActive(false);
+      _shieldBoostActive = false;
+    }
 
     // check if out of lives - destroy object and end spawning
     if (_lives < 1) {
@@ -70,6 +89,29 @@ public class Player : MonoBehaviour {
 
       Destroy(this.gameObject);
     }
+
+  }
+
+  public void ShieldBoostActive() {
+    // turn the shield sprite on
+    _shield.SetActive(true);
+    _shieldBoostActive = true;
+    StartCoroutine(ShieldBoostPowerDownRoutine());
+  }
+
+  IEnumerator ShieldBoostPowerDownRoutine() {
+    yield return new WaitForSeconds(5.0f);
+    _shield.SetActive(false);
+    _shieldBoostActive = false;
+  }
+  public void SpeedBoostActive() {
+    _speedBoostActive = true;
+    StartCoroutine(SpeedBoostPowerDownRoutine());
+  }
+
+  IEnumerator SpeedBoostPowerDownRoutine() {
+    yield return new WaitForSeconds(5.0f);
+    _speedBoostActive = false;
   }
 
   public void TripleShotActive() {
@@ -90,7 +132,7 @@ public class Player : MonoBehaviour {
     verticalInput = GetPositionY();
 
     Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
-    transform.Translate(direction * speed * Time.deltaTime);
+    transform.Translate(direction * speed * (_speedBoostActive ? 1.75f : 1.0f) * Time.deltaTime); // 50% speed boost
   }
 
   float GetPositionX() {
