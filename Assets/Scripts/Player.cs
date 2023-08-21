@@ -21,12 +21,22 @@ public class Player : MonoBehaviour {
   
   // lives
   [SerializeField] 
-  private int lives = 3;
+  private int _lives = 3;
+
+  // spawn manager
+  private SpawnManager _spawnManager;
+
+  // triple shot variables
+  [SerializeField] 
+  private GameObject _tripleShotPrefab;
+  [SerializeField] 
+  private bool _tripleShotActive;
 
   /* ============= BUILT IN METHODS ============== */
   void Start() {
     transform.position = new Vector3(0, 0, 0);      
     _fireRate = 0.25f;
+    _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
   }
 
   void Update() {
@@ -40,11 +50,38 @@ public class Player : MonoBehaviour {
   /* ============= STAND ALONE METHODS =========== */
   void FireLaser() {
     _canFire = Time.time + _fireRate;
-    Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
-    // 25% chance of spawning enemy upon firing
-    if (Random.Range(0, 4) == 0)
-      Instantiate(_enemyPrefab);
+
+    if (_tripleShotActive) {
+      Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+    } else {
+      Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.5f, 0), Quaternion.identity);
+    }
+
   }
+
+  public void Damage() {
+    _lives--;
+
+    // check if out of lives - destroy object and end spawning
+    if (_lives < 1) {
+
+      if (_spawnManager != null)
+        _spawnManager.OnPlayerDeath();
+
+      Destroy(this.gameObject);
+    }
+  }
+
+  public void TripleShotActive() {
+    _tripleShotActive = true;
+    StartCoroutine(TripleShotPowerDownRoutine());
+  }
+
+  IEnumerator TripleShotPowerDownRoutine() {
+    yield return new WaitForSeconds(5.0f);
+    _tripleShotActive = false;
+  }
+
   /* ============================================= */
 
   /* ============= MOVEMENT METHODS ============== */

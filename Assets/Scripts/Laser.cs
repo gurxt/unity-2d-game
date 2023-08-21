@@ -11,6 +11,8 @@ public class Laser : MonoBehaviour {
 
   void Update() {
     if (transform.position.y >= 11.0f) {
+      if (transform.parent != null)
+        Destroy(transform.parent.gameObject);
       Destroy(this.gameObject);
     }
     

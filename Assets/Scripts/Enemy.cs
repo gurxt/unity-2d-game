@@ -20,12 +20,16 @@ public class Enemy : MonoBehaviour {
     }
   }
 
-  private void OnTriggerEnter(Collider other) {
+  void OnTriggerEnter2D(Collider2D other) {
     if (other.tag == "Player") {
       Destroy(this.gameObject);
-      //Destroy(GameObject.FindGameObjectWithTag("Player"));
+      // check if the player exists
+      Player player = other.transform.GetComponent<Player>();
+      // damage the player.
+      if (player != null)
+        player.Damage();
     }
-    Debug.Log(other.tag);
+
     if (other.tag == "Laser") { 
       Destroy(this.gameObject);
       Destroy(other.gameObject);
