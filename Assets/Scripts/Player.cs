@@ -44,12 +44,25 @@ public class Player : MonoBehaviour {
   [SerializeField]
   private GameObject _shield;
 
+  // UI variables
+  [SerializeField]
+  private int _score;
+  private UIManager _uiManager;
+
+  // damage thrusters
+  [SerializeField]
+  private GameObject _rightEngine, _leftEngine;
+
 
   /* ============= BUILT IN METHODS ============== */
   void Start() {
     transform.position = new Vector3(0, 0, 0);      
     _fireRate = 0.25f;
     _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+    _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+    if (_uiManager == null)
+      Debug.Log("The UI Manager is NULL");
   }
 
   void Update() {
@@ -75,7 +88,9 @@ public class Player : MonoBehaviour {
   public void Damage() {
     if (!_shieldBoostActive) {
       _lives--;
-      Debug.Log("Lives Remaining: " + _lives);
+      if (_lives == 2) _leftEngine.SetActive(true);
+      if (_lives == 1) _rightEngine.SetActive(true);
+      _uiManager.UpdateLives(_lives);
     } else {
       _shield.SetActive(false);
       _shieldBoostActive = false;
@@ -83,7 +98,7 @@ public class Player : MonoBehaviour {
 
     // check if out of lives - destroy object and end spawning
     if (_lives < 1) {
-
+      _uiManager.GameOver();
       if (_spawnManager != null)
         _spawnManager.OnPlayerDeath();
 
@@ -122,6 +137,11 @@ public class Player : MonoBehaviour {
   IEnumerator TripleShotPowerDownRoutine() {
     yield return new WaitForSeconds(5.0f);
     _tripleShotActive = false;
+  }
+
+  public void AddScore(int points) {
+    _score += points;
+    _uiManager.UpdateScore(_score);
   }
 
   /* ============================================= */

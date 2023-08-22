@@ -16,16 +16,13 @@ public class SpawnManager : MonoBehaviour {
 
   private bool _stopSpawning = false;
 
-  void Start() {
+  public void StartSpawning() {
     StartCoroutine(SpawnEnemyRoutine());
     StartCoroutine(SpawnPowerupRoutine());
   }
 
-  void Update() {
-      
-  }
-
   IEnumerator SpawnEnemyRoutine() {
+    yield return new WaitForSeconds(2.0f);
     while (!_stopSpawning) {
       Vector3 startPos = new Vector3(Random.Range(-9.0f, 9.0f), 11.0f, 0);
       GameObject newEnemy = Instantiate(_enemyPrefab, startPos, Quaternion.identity);
@@ -35,6 +32,7 @@ public class SpawnManager : MonoBehaviour {
   }
 
   IEnumerator SpawnPowerupRoutine() {
+    yield return new WaitForSeconds(2.0f);
     while (!_stopSpawning) {
       Vector3 startPos = new Vector3(Random.Range(-9.0f, 9.0f), 11.0f, 0);
       // get random number from 0-2 to determine which powerup to spawn.

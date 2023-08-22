@@ -5,10 +5,22 @@ using UnityEngine;
 public class Enemy : MonoBehaviour {
   [SerializeField]
   private float _speed = 4.0f;
+  private Player _player;
+  private Animator _anim;
 
   void Start() {
     float randomX = Random.Range(-9.0f, 9.0f);
     transform.position = new Vector3(randomX, 13.0f, 0);
+
+    _player = GameObject.Find("Player").GetComponent<Player>();
+    if (_player == null) {
+      Debug.LogError("The Player is NULL");
+    }
+
+    _anim = GetComponent<Animator>();
+    if (_anim == null) {
+      Debug.LogError("The Animator is NULL");
+    } 
   }
 
   void Update() {
@@ -22,16 +34,23 @@ public class Enemy : MonoBehaviour {
 
   void OnTriggerEnter2D(Collider2D other) {
     if (other.tag == "Player") {
-      Destroy(this.gameObject);
       // check if the player exists
       Player player = other.transform.GetComponent<Player>();
-      // damage the player.
+      // damage the player
       if (player != null)
         player.Damage();
+      _speed = 0.0f;
+      _anim.SetTrigger("OnEnemyDeath");
+      Destroy(this.gameObject, 2.5f);
     }
 
     if (other.tag == "Laser") { 
-      Destroy(this.gameObject);
+      if (_player != null)
+        _player.AddScore(Random.Range(5, 10));
+      // destroy both player and enemy
+      _speed = 0.0f;
+      _anim.SetTrigger("OnEnemyDeath");
+      Destroy(this.gameObject, 2.5f);
       Destroy(other.gameObject);
     }
   }
